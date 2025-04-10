@@ -1,6 +1,7 @@
 package com.example.demo.controller;
 
 import com.example.demo.entity.Addr;
+import com.example.demo.repository.AddrRepositroy;
 import com.example.demo.service.AddrService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -16,6 +17,8 @@ import java.util.List;
 public class AddrController {
     @Autowired
     private AddrService addrService;
+    @Autowired
+    private AddrRepositroy addrRepositroy;
 
     @Operation(summary = "保存資料 (單筆)", description = "無ID=新增 / 有ID=更新")
     @PostMapping("/save")
@@ -55,15 +58,28 @@ public class AddrController {
         return ResponseEntity.ok().build();
     }
 
-    @Operation(summary = "查詢資料: 根據 客戶證號 ", description = "查詢單筆資料")
-    @GetMapping("/findByClientId")
-    public ResponseEntity<List<Addr>> findByClientId(@RequestParam("clientId") String clientId){
-        return ResponseEntity.ok(addrService.findByClientId(clientId));
-    }
+//    @Operation(summary = "查詢資料: 根據 客戶證號 ", description = "查詢單筆資料")
+//    @GetMapping("/findByClientId")
+//    public ResponseEntity<List<Addr>> findByClientId(@RequestParam("clientId") String clientId){
+//        return ResponseEntity.ok(addrService.findByClientId(clientId));
+//    }
 
     @Operation(summary = "查詢資料: 取得 E指示 ", description = "取得 E指示")
     @GetMapping("/findEAddrByClientId")
     public ResponseEntity<Addr> findEAddrByClientId(@RequestParam("clientId") String clientId) {
         return ResponseEntity.ok(addrService.findEAddrByClientId(clientId));
     }
+
+    @Operation(summary = "方法命名 測試 1 ", description = "根據 客戶證號 取得資料")
+    @GetMapping("/findByClientId")
+    public ResponseEntity<List<Addr>> findByClientId(@RequestParam("clientId") String clientId) {
+        return ResponseEntity.ok(addrRepositroy.findByClientId(clientId));
+    }
+
+    @Operation(summary = "方法命名 測試 2 ", description = "根據 客戶證號 取得資料 (有排序)")
+    @GetMapping("/findByClientIdOrderByAddrIndDesc")
+    public ResponseEntity<List<Addr>> findByClientIdOrderByAddrIndDesc(@RequestParam("clientId") String clientId) {
+        return ResponseEntity.ok(addrRepositroy.findByClientIdOrderByAddrIndDesc(clientId));
+    }
+
 }

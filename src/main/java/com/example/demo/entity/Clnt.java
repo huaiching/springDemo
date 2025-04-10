@@ -22,7 +22,7 @@ public class Clnt {
     private String birthDate;
 
     @Schema(description = "性別")
-    @Column(name = "sex", length = 1)
+    @Column(name = "sex", length = 2)
     private String sex;
 
     // Getters 和 Setters
