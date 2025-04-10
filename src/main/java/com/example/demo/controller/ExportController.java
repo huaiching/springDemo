@@ -1,5 +1,7 @@
 package com.example.demo.controller;
 
+import com.example.demo.dto.ClientIdDto;
+import com.example.demo.dto.ClientIdListDto;
 import com.example.demo.entity.Clnt;
 import com.example.demo.repository.ClntRepositroy;
 import com.example.demo.service.ClntService;
@@ -28,18 +30,18 @@ public class ExportController {
 
 
     @Operation(summary = "產出 客戶證號明細表 (word)", description = "產出 客戶證號明細表 (word)")
-    @GetMapping("/exportDemo01")
-    public ResponseEntity<Resource> exportDemo01(@RequestParam String clientId) throws UnsupportedEncodingException {
-        byte[] fileBytes = wordService.exportDemo01(clientId);
+    @PostMapping("/exportDemo01")
+    public ResponseEntity<Resource> exportDemo01(@RequestBody ClientIdDto clientIdDto) throws UnsupportedEncodingException {
+        byte[] fileBytes = wordService.exportDemo01(clientIdDto.getClientId());
         String fileName = "客戶證號明細表.docx";
 
         return FileUtil.responseEntity(fileName, fileBytes);
     }
 
     @Operation(summary = "產出 客戶地址明細表 (excel)", description = "產出 客戶地址明細表 (excel)")
-    @GetMapping("/exportDemo02")
-    public ResponseEntity<Resource> exportDemo02(@RequestParam String clientId) throws UnsupportedEncodingException {
-        byte[] fileBytes = excelService.exportDemo02(clientId);
+    @PostMapping("/exportDemo02")
+    public ResponseEntity<Resource> exportDemo02(@RequestBody ClientIdDto clientIdDto) throws UnsupportedEncodingException {
+        byte[] fileBytes = excelService.exportDemo02(clientIdDto.getClientId());
         String fileName = "客戶地址明細表.xlsx";
 
         return FileUtil.responseEntity(fileName, fileBytes);
@@ -48,8 +50,8 @@ public class ExportController {
 
     @Operation(summary = "產出 客戶地址明細表 (排序) (excel)", description = "產出 客戶地址明細表 (排序) (excel)")
     @PostMapping("/exportDemo08")
-    public ResponseEntity<Resource> exportDemo08(@RequestBody List<String> clientIdList) throws UnsupportedEncodingException {
-        byte[] fileBytes = excelService.exportDemo08(clientIdList);
+    public ResponseEntity<Resource> exportDemo08(@RequestBody ClientIdListDto clientIdListDto) throws UnsupportedEncodingException {
+        byte[] fileBytes = excelService.exportDemo08(clientIdListDto.getClientIdList());
         String fileName = "客戶地址明細表(排序).xlsx";
 
         return FileUtil.responseEntity(fileName, fileBytes);
