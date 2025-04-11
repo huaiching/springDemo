@@ -12,7 +12,8 @@ public class CorsConfig implements WebMvcConfigurer {
                 .allowedOriginPatterns("http://localhost:[*]") // 允許的來源
                 .allowedMethods("GET", "POST", "PUT", "DELETE") // 允許的 HTTP 方法
                 .allowedHeaders("*") // 允許所有請求頭
-                .exposedHeaders("Content-Disposition") // 暴露 Content-Disposition 給前端
+                .exposedHeaders("*") // 暴露 Content-Disposition 給前端
+//                .exposedHeaders("Content-Disposition") // 暴露 Content-Disposition 給前端
                 .allowCredentials(true) // 是否允許攜帶憑證（如 Cookie）
                 .maxAge(3600); // 預檢請求的有效期（秒）
     }
