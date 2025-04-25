@@ -1,7 +1,7 @@
 package com.example.demo.util;
 
 import com.deepoove.poi.XWPFTemplate;
-import com.example.demo.dto.utils.ZipFlieDto;
+import com.example.demo.dto.ZipFlieDto;
 import com.lowagie.text.Document;
 import com.lowagie.text.pdf.PdfCopy;
 import com.lowagie.text.pdf.PdfImportedPage;

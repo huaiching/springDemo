@@ -2,12 +2,12 @@ package com.example.demo.service.Impl;
 
 import com.example.demo.dto.EntityWhereDto;
 import com.example.demo.service.EntitySqlServive;
-import io.micrometer.common.util.StringUtils;
-import jakarta.persistence.*;
+import javax.persistence.*;
 import org.hibernate.query.NativeQuery;
 import org.hibernate.transform.Transformers;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import java.lang.reflect.Field;
 import java.util.HashMap;
@@ -201,7 +201,7 @@ public class EntitySqlServiceImpl implements EntitySqlServive {
         }
         // (2) 設定 欄位類型
         for (Field field : tableClass.getDeclaredFields()) {
-            query.addScalar(field.getName(), field.getType());
+            query.addScalar(field.getName());
         }
         // (3) 設定 自動映射到 tableClass，並輸出為 List
         return query.setResultTransformer(Transformers.aliasToBean(tableClass)).getResultList();

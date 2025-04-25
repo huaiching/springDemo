@@ -4,7 +4,7 @@ import com.example.demo.entity.Addr;
 import com.example.demo.mapper.AddrMapper;
 import com.example.demo.repository.AddrRepositroy;
 import com.example.demo.service.AddrService;
-import jakarta.persistence.EntityManager;
+import javax.persistence.EntityManager;
 import org.hibernate.query.NativeQuery;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;

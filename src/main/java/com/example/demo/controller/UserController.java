@@ -8,7 +8,7 @@ import com.example.demo.entity.Clnt;
 import com.example.demo.service.EntitySqlServive;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.persistence.EntityManager;
+import javax.persistence.EntityManager;
 import org.hibernate.query.NativeQuery;
 import org.hibernate.transform.Transformers;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,7 +47,7 @@ public class UserController {
         // 設定 查詢結果的型態
         // 透過 class 的 getDeclaredFields() 可以取得 DTO 的所有欄位
         for (Field field : UserDto.class.getDeclaredFields()) {
-            query.addScalar(field.getName(), field.getType());
+            query.addScalar(field.getName());
         }
         // 設定 查詢結果的自動映射
         query.setResultTransformer(Transformers.aliasToBean(UserDto.class));

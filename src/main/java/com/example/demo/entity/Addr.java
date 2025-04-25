@@ -2,7 +2,7 @@ package com.example.demo.entity;
 
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.persistence.*;
+import javax.persistence.*;
 import org.hibernate.annotations.NaturalId;
 
 import java.io.Serializable;

@@ -1,7 +1,7 @@
 package com.example.demo.entity;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.persistence.*;
+import javax.persistence.*;
 
 //@Table(name = "benf")
 @Schema(description = "受益人檔")
