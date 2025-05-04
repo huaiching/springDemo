@@ -1,5 +1,6 @@
 package com.example.demo.controller;
 
+import com.example.demo.dto.ClientIdDto;
 import com.example.demo.dto.EntityWhereDto;
 import com.example.demo.entity.Benf;
 import com.example.demo.entity.Clnt;
@@ -41,9 +42,9 @@ public class ClntController {
     }
 
     @Operation(summary = "查詢資料: 根據 主鍵(clientId) ", description = "查詢單筆資料")
-    @GetMapping("/findById")
-    public ResponseEntity<Optional<Clnt>> findById(@RequestParam String clientId) {
-        return ResponseEntity.ok(clntService.findById(clientId));
+    @PostMapping("/findById")
+    public ResponseEntity<Optional<Clnt>> findById(@RequestBody ClientIdDto clientIdDto) {
+        return ResponseEntity.ok(clntService.findById(clientIdDto.getClientId()));
     }
 
     @Operation(summary = "查詢資料: 根據 主鍵集合(clientId) ", description = "查詢多筆資料")
@@ -60,7 +61,7 @@ public class ClntController {
     }
 
     @Operation(summary = "刪除資料: 根據 主鍵集合(clientId) ", description = "刪除多筆資料")
-    @DeleteMapping("/deleteAllById")
+    @PostMapping("/deleteAllById")
     public ResponseEntity<Void> deleteAllById(@RequestBody List<String> clientIdList) {
         clntService.deleteAllById(clientIdList);
         return ResponseEntity.ok().build();

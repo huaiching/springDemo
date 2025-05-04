@@ -45,14 +45,14 @@ public class AddrController {
     }
 
     @Operation(summary = "刪除資料: 根據 主鍵(clientId + addrInd) ", description = "刪除單筆資料")
-    @DeleteMapping("/deleteById")
+    @PostMapping("/deleteById")
     public ResponseEntity<Void> deleteById(@RequestBody Addr.AddrKey addrKey) {
         addrService.deleteById(addrKey);
         return ResponseEntity.ok().build();
     }
 
     @Operation(summary = "刪除資料: 根據 主鍵集合(clientId + addrInd) ", description = "刪除多筆資料")
-    @DeleteMapping("/deleteAllById")
+    @PostMapping("/deleteAllById")
     public ResponseEntity<Void> deleteAllById(@RequestBody List<Addr.AddrKey> addrKeyList) {
         addrService.deleteAllById(addrKeyList);
         return ResponseEntity.ok().build();

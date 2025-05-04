@@ -16,8 +16,8 @@ public class SpringDocConfig {
     public OpenAPI baseOpenAPI() {
         return new OpenAPI()
                 .info(new Info()
-                        .title("Spring Boot 3 Demo")
-                        .description("SpringBoot 3.x application")
+                        .title("Spring Boot 練習專案")
+                        .description("SpringBoot application")
                         .version("v0.0.1")
                 );
     }
