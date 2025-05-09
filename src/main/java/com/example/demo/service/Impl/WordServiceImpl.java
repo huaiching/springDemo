@@ -8,6 +8,7 @@ import com.example.demo.util.FileUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -32,6 +33,10 @@ public class WordServiceImpl implements WordService {
         context.put("birthDate", clnt.getBirthDate());
         context.put("sex", SexEnum.getEnum(clnt.getSex()).getDesc());
 
-        return FileUtil.generateWord("/templates/demo_01.docx", context);
+//        var word =  FileUtil.generateWord("/templates/demo_01.docx", context);
+        return FileUtil.generateWord("/templates/demo_01.docx", Arrays.asList(context, context, context, context));
+
+
+//        return FileUtil.generateWord(Arrays.asList(word, word, word));
     }
 }

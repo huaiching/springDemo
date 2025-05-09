@@ -72,23 +72,47 @@
 			<artifactId>swagger-ui</artifactId>
 			<version>5.11.10</version>
 		</dependency>
-		<!-- Jxls -->
+
+		<!-- 強制使用 POI 5.2.3（最新穩定版） -->
 		<dependency>
-			<groupId>org.jxls</groupId>
-			<artifactId>jxls</artifactId>
-			<version>2.12.0</version>
+			<groupId>org.apache.poi</groupId>
+			<artifactId>poi</artifactId>
+			<version>5.2.3</version>
 		</dependency>
+		<dependency>
+			<groupId>org.apache.poi</groupId>
+			<artifactId>poi-ooxml</artifactId>
+			<version>5.2.3</version>
+		</dependency>
+
+		<!-- jxls-poi 2.12.0 -->
 		<dependency>
 			<groupId>org.jxls</groupId>
 			<artifactId>jxls-poi</artifactId>
 			<version>2.12.0</version>
+			<exclusions>
+				<!-- 排除其自帶的 POI -->
+				<exclusion>
+					<groupId>org.apache.poi</groupId>
+					<artifactId>*</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
-		<!-- poi-tl -->
+
+		<!-- poi-tl 1.12.1 -->
 		<dependency>
 			<groupId>com.deepoove</groupId>
 			<artifactId>poi-tl</artifactId>
 			<version>1.12.1</version>
+			<exclusions>
+				<!-- 排除其自帶的 POI -->
+				<exclusion>
+					<groupId>org.apache.poi</groupId>
+					<artifactId>*</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
+
 		<!-- fr.opensagres.poi.xwpf.converter.pdf -->
 		<dependency>
 			<groupId>fr.opensagres.xdocreport</groupId>

@@ -1,6 +1,7 @@
 package com.example.demo.util;
 
 import com.deepoove.poi.XWPFTemplate;
+import com.deepoove.poi.xwpf.NiceXWPFDocument;
 import com.example.demo.dto.ZipFlieDto;
 import com.lowagie.text.Document;
 import com.lowagie.text.pdf.PdfCopy;
@@ -9,7 +10,7 @@ import com.lowagie.text.pdf.PdfReader;
 import fr.opensagres.poi.xwpf.converter.pdf.PdfConverter;
 import fr.opensagres.poi.xwpf.converter.pdf.PdfOptions;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.poi.xwpf.usermodel.XWPFDocument;
+import org.apache.poi.xwpf.usermodel.*;
 import org.jxls.common.Context;
 import org.jxls.util.JxlsHelper;
 import org.springframework.core.io.ByteArrayResource;
@@ -19,10 +20,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
+import java.io.*;
 import java.net.URLEncoder;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
@@ -50,22 +48,81 @@ public class FileUtil {
     }
 
     /**
-     * 產生 Word (poi-tl)
-     * @param modelFile 樣板路徑
-     * @param context 內容
-     * @return Word 資料流
+     * 產生 Word 檔案
+     *
+     * @param modelFile 樣板路徑（例如："templates/document_template.docx"，位於 classpath）
+     * @param context   資料內容（Map 對應樣板中 {{key}} 欄位）
+     * @return 產出的 Word 檔案資料流（byte[]）
      */
     public static byte[] generateWord(String modelFile, Map<String, Object> context) {
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        try {
-            XWPFTemplate template = XWPFTemplate.compile(new ClassPathResource(modelFile).getInputStream());
-            template.render(context);
+        try (
+                InputStream inputStream = new ClassPathResource(modelFile).getInputStream();
+                ByteArrayOutputStream outputStream = new ByteArrayOutputStream()
+        ) {
+            // 載入樣板並填入資料
+            XWPFTemplate template = XWPFTemplate.compile(inputStream).render(context);
+
+            // 將結果寫入 outputStream 並關閉資源
             template.writeAndClose(outputStream);
+
+            return outputStream.toByteArray();
+
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Word 產生失敗，樣板路徑：" + modelFile, e);
         }
-        return outputStream.toByteArray();
     }
+
+    /**
+     * 產生 Word 檔案 (合併列印)
+     *
+     * @param modelFile 樣板路徑（例如："templates/document_template.docx"，位於 classpath）
+     * @param contextList   資料內容 清單（Map 對應樣板中 {{key}} 欄位）
+     * @return 產出的 Word 檔案資料流（byte[]）
+     */
+    public static byte[] generateWord(String modelFile, List<Map<String, Object>> contextList) {
+        if (contextList == null || contextList.isEmpty()) {
+            throw new IllegalArgumentException("資料內容 不可空白!!");
+        }
+
+        try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
+            // 使用第一個文件作為基礎
+            var firstWord = generateWord(modelFile, contextList.get(0));
+            NiceXWPFDocument mainWord = new NiceXWPFDocument(new ByteArrayInputStream(firstWord));
+
+            try {
+                // 合併後續文件
+                for (int i = 1; i < contextList.size(); i++) {
+                    // 在合併前先加入分頁符
+                    addPageBreak(mainWord);
+
+                    var tmpWord = generateWord(modelFile, contextList.get(i));
+                    NiceXWPFDocument subWord = new NiceXWPFDocument(new ByteArrayInputStream(tmpWord));
+                    mainWord = mainWord.merge(subWord);
+                    subWord.close();
+                }
+
+                mainWord.write(outputStream);
+                return outputStream.toByteArray();
+
+            } catch (Exception e) {
+                throw new RuntimeException("Word 合併失敗：", e);
+            } finally {
+                mainWord.close();
+            }
+        } catch (IOException e) {
+            throw new RuntimeException("Word 產生失敗，樣板路徑：" + modelFile, e);
+        }
+    }
+
+    /**
+     * 在文件末尾加入分頁符
+     */
+    private static void addPageBreak(NiceXWPFDocument doc) {
+        XWPFParagraph paragraph = doc.createParagraph();
+        XWPFRun run = paragraph.createRun();
+        run.addBreak(BreakType.PAGE);  // 加入分頁符
+    }
+
 
     /**
      * word 轉 PDF (fr.opensagres.poi.xwpf.converter.pdf)
@@ -223,5 +280,44 @@ public class FileUtil {
                 .headers(respHeaders)
                 .contentType(MediaType.APPLICATION_OCTET_STREAM)
                 .body(resource);
+    }
+
+
+    /**
+     * 合併多個 Word 檔案的 byte[] 為一個新的 byte[]
+     *
+     * @param wordFiles byte[] 陣列，包含多個 Word 檔案的 byte[]
+     * @return 合併後的 Word 檔案的 byte[]
+     * @throws IOException 當操作 IO 時拋出異常
+     */
+    public static byte[] mergeWordFiles(byte[][] wordFiles) throws IOException {
+        // 創建一個新的 XWPFDocument，用來儲存合併後的文檔
+        XWPFDocument mergedDoc = new XWPFDocument();
+
+        // 遍歷每個 byte[] 文檔並將其合併
+        for (int i = 0; i < wordFiles.length; i++) {
+            try (ByteArrayInputStream bais = new ByteArrayInputStream(wordFiles[i]);
+                 XWPFDocument doc = new XWPFDocument(bais)) {
+
+                // 將每個文件中的段落複製到新的文檔中
+                for (XWPFParagraph p : doc.getParagraphs()) {
+                    XWPFParagraph newPara = mergedDoc.createParagraph();
+                    newPara.getCTP().set(p.getCTP().copy());
+                }
+
+                // 可選：每個文檔之間添加分頁
+                if (i < wordFiles.length - 1) {
+                    XWPFParagraph pageBreak = mergedDoc.createParagraph();
+                    XWPFRun run = pageBreak.createRun();
+                    run.addBreak(org.apache.poi.xwpf.usermodel.BreakType.PAGE);
+                }
+            }
+        }
+
+        // 使用 ByteArrayOutputStream 將合併結果轉為 byte[]
+        try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
+            mergedDoc.write(baos);
+            return baos.toByteArray();
+        }
     }
 }
