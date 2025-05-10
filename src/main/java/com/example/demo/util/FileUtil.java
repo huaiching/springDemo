@@ -283,41 +283,4 @@ public class FileUtil {
     }
 
 
-    /**
-     * 合併多個 Word 檔案的 byte[] 為一個新的 byte[]
-     *
-     * @param wordFiles byte[] 陣列，包含多個 Word 檔案的 byte[]
-     * @return 合併後的 Word 檔案的 byte[]
-     * @throws IOException 當操作 IO 時拋出異常
-     */
-    public static byte[] mergeWordFiles(byte[][] wordFiles) throws IOException {
-        // 創建一個新的 XWPFDocument，用來儲存合併後的文檔
-        XWPFDocument mergedDoc = new XWPFDocument();
-
-        // 遍歷每個 byte[] 文檔並將其合併
-        for (int i = 0; i < wordFiles.length; i++) {
-            try (ByteArrayInputStream bais = new ByteArrayInputStream(wordFiles[i]);
-                 XWPFDocument doc = new XWPFDocument(bais)) {
-
-                // 將每個文件中的段落複製到新的文檔中
-                for (XWPFParagraph p : doc.getParagraphs()) {
-                    XWPFParagraph newPara = mergedDoc.createParagraph();
-                    newPara.getCTP().set(p.getCTP().copy());
-                }
-
-                // 可選：每個文檔之間添加分頁
-                if (i < wordFiles.length - 1) {
-                    XWPFParagraph pageBreak = mergedDoc.createParagraph();
-                    XWPFRun run = pageBreak.createRun();
-                    run.addBreak(org.apache.poi.xwpf.usermodel.BreakType.PAGE);
-                }
-            }
-        }
-
-        // 使用 ByteArrayOutputStream 將合併結果轉為 byte[]
-        try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
-            mergedDoc.write(baos);
-            return baos.toByteArray();
-        }
-    }
 }
